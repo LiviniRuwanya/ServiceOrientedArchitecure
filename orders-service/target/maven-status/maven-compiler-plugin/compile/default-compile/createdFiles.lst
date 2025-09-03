@@ -1,0 +1,5 @@
+com\globalbooks\orders\service\OrderService.class
+com\globalbooks\orders\model\OrderResponse.class
+com\globalbooks\orders\OrdersServiceApplication.class
+com\globalbooks\orders\controller\OrdersController.class
+com\globalbooks\orders\model\OrderRequest.class

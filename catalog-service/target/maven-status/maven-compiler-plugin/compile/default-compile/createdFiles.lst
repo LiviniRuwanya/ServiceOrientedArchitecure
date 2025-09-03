@@ -1,0 +1,5 @@
+com\example\bookcatalog\ws\BookCatalogPortType.class
+com\example\bookcatalog\ws\BookCatalogService.class
+com\example\bookcatalog\ws\Book.class
+com\example\bookcatalog\config\CxfConfig.class
+com\example\bookcatalog\BookCatalogApplication.class

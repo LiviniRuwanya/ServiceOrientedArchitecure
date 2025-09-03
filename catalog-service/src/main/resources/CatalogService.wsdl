@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="BookCatalogService" 
+             targetNamespace="http://ws.bookcatalog.example.com/" 
+             xmlns="http://schemas.xmlsoap.org/wsdl/" 
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+             xmlns:tns="http://ws.bookcatalog.example.com/" 
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  
+  <types>
+    <xsd:schema targetNamespace="http://ws.bookcatalog.example.com/">
+      <xsd:complexType name="Book">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:string"/>
+          <xsd:element name="title" type="xsd:string"/>
+          <xsd:element name="author" type="xsd:string"/>
+          <xsd:element name="price" type="xsd:double"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      
+      <xsd:element name="getBook" type="xsd:string"/>
+      <xsd:element name="getBookResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="tns:Book"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <xsd:element name="listBooks" type="xsd:string"/>
+      <xsd:element name="listBooksResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <xsd:element name="addBook" type="tns:Book"/>
+      <xsd:element name="addBookResponse" type="tns:Book"/>
+    </xsd:schema>
+  </types>
+  
+  <message name="getBook">
+    <part name="parameters" element="tns:getBook"/>
+  </message>
+  <message name="getBookResponse">
+    <part name="parameters" element="tns:getBookResponse"/>
+  </message>
+  
+  <message name="listBooks">
+    <part name="parameters" element="tns:listBooks"/>
+  </message>
+  <message name="listBooksResponse">
+    <part name="parameters" element="tns:listBooksResponse"/>
+  </message>
+  
+  <message name="addBook">
+    <part name="parameters" element="tns:addBook"/>
+  </message>
+  <message name="addBookResponse">
+    <part name="parameters" element="tns:addBookResponse"/>
+  </message>
+  
+  <portType name="BookCatalogPortType">
+    <operation name="getBook">
+      <input message="tns:getBook"/>
+      <output message="tns:getBookResponse"/>
+    </operation>
+    <operation name="listBooks">
+      <input message="tns:listBooks"/>
+      <output message="tns:listBooksResponse"/>
+    </operation>
+    <operation name="addBook">
+      <input message="tns:addBook"/>
+      <output message="tns:addBookResponse"/>
+    </operation>
+  </portType>
+  
+  <binding name="BookCatalogPortBinding" type="tns:BookCatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getBook">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="listBooks">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="addBook">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  
+  <service name="BookCatalogService">
+    <port name="BookCatalogPort" binding="tns:BookCatalogPortBinding">
+      <soap:address location="http://localhost:8081/services"/>
+    </port>
+  </service>
+</definitions>

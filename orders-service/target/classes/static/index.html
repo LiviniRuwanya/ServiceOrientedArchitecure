@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlobalBooks Orders Service</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .order-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: #ff6b6b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .order-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid #ff6b6b;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .order-id {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .order-details {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .order-details strong {
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            margin-top: 1rem;
+        }
+
+        .error {
+            background: #fee;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #c53030;
+            margin-top: 1rem;
+        }
+
+        .recent-orders {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .order-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+
+        .order-item:hover {
+            background: #f8f9fa;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-customer {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .order-book {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .order-status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shopping-cart"></i> GlobalBooks Orders</h1>
+            <p>Manage Your Book Orders with Ease</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="confirmedOrders">0</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingOrders">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="order-section">
+                <div class="section-title">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>Place New Order</h3>
+                </div>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label for="bookId">Book ID</label>
+                        <input type="text" id="bookId" name="bookId" value="123" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <select id="quantity" name="quantity" required>
+                            <option value="1">1</option>
+                            <option value="2" selected>2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer">Customer Name</label>
+                        <input type="text" id="customer" name="customer" value="Lily" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="orderBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        Place Order
+                    </button>
+                </form>
+                <div id="orderResult"></div>
+            </div>
+
+            <div class="order-section">
+                <div class="section-title">
+                    <i class="fas fa-search"></i>
+                    <h3>Check Order Status</h3>
+                </div>
+                <form id="statusForm">
+                    <div class="form-group">
+                        <label for="orderId">Order ID</label>
+                        <input type="text" id="orderId" name="orderId" placeholder="Enter order ID" required>
+                    </div>
+                    <button type="submit" class="submit-btn" id="statusBtn">
+                        <i class="fas fa-search"></i>
+                        Check Status
+                    </button>
+                </form>
+                <div id="statusResult"></div>
+            </div>
+        </div>
+
+        <div class="recent-orders">
+            <div class="section-title">
+                <i class="fas fa-history"></i>
+                <h3>Recent Orders</h3>
+            </div>
+            <div class="order-list" id="recentOrders">
+                <div style="text-align: center; color: #666; padding: 2rem;">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>No orders yet. Place your first order to get started!</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsSection" class="results-section">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Processing...</p>
+            </div>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        let orders = [];
+        let orderCounter = 1;
+
+        // Initialize stats
+        updateStats();
+
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const orderData = {
+                bookId: formData.get('bookId'),
+                quantity: parseInt(formData.get('quantity')),
+                customer: formData.get('customer')
+            };
+
+            const orderBtn = document.getElementById('orderBtn');
+            orderBtn.disabled = true;
+            orderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                const response = await fetch('/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+                
+                // Create order object
+                const newOrder = {
+                    orderId: result.orderId,
+                    status: result.status,
+                    bookId: orderData.bookId,
+                    quantity: orderData.quantity,
+                    customer: orderData.customer,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                orders.unshift(newOrder);
+                updateRecentOrders();
+                updateStats();
+
+                document.getElementById('orderResult').innerHTML = `
+                    <div class="success">
+                        <h4><i class="fas fa-check-circle"></i> Order Created Successfully!</h4>
+                        <div class="order-details">
+                            <p><strong>Order ID:</strong> ${result.orderId}</p>
+                            <p><strong>Status:</strong> ${result.status}</p>
+                            <p><strong>Book ID:</strong> ${orderData.bookId}</p>
+                            <p><strong>Quantity:</strong> ${orderData.quantity}</p>
+                            <p><strong>Customer:</strong> ${orderData.customer}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Reset form
+                this.reset();
+                document.getElementById('bookId').value = '123';
+                document.getElementById('quantity').value = '2';
+                document.getElementById('customer').value = 'Lily';
+
+            } catch (error) {
+                document.getElementById('orderResult').innerHTML = `
+                    <div class="error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error Creating Order</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                orderBtn.disabled = false;
+                orderBtn.innerHTML = '<i class="fas fa-shopping-cart"></i> Place Order';
+            }
+        });
+
+        document.getElementById('statusForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const orderId = formData.get('orderId');
+
+            const statusBtn = document.getElementById('statusBtn');
+            statusBtn.disabled = true;
+            statusBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+            try {
+                const response = await fetch(`/orders/${orderId}`);
+                const result = await response.json();
+                
+                document.getElementById('statusResult').innerHTML = `
+                    <div class="success">
+                        <h4><i class="fas fa-info-circle"></i> Order Status</h4>
+                        <div class="order-details">
+                            <p><strong>Order ID:</strong> ${result.orderId}</p>
+                            <p><strong>Status:</strong> ${result.status}</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('statusResult').innerHTML = `
+                    <div class="error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error Checking Order</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                statusBtn.disabled = false;
+                statusBtn.innerHTML = '<i class="fas fa-search"></i> Check Status';
+            }
+        });
+
+        function updateRecentOrders() {
+            const recentOrdersDiv = document.getElementById('recentOrders');
+            
+            if (orders.length === 0) {
+                recentOrdersDiv.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 2rem;">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No orders yet. Place your first order to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const ordersHTML = orders.slice(0, 5).map(order => `
+                <div class="order-item">
+                    <div class="order-info">
+                        <div class="order-customer">${order.customer}</div>
+                        <div class="order-book">Book ID: ${order.bookId} | Qty: ${order.quantity}</div>
+                        <div style="font-size: 0.8rem; color: #999;">${order.timestamp}</div>
+                    </div>
+                    <div class="order-status-badge ${order.status === 'CONFIRMED' ? 'status-confirmed' : 'status-pending'}">
+                        ${order.status}
+                    </div>
+                </div>
+            `).join('');
+
+            recentOrdersDiv.innerHTML = ordersHTML;
+        }
+
+        function updateStats() {
+            document.getElementById('totalOrders').textContent = orders.length;
+            document.getElementById('confirmedOrders').textContent = orders.filter(o => o.status === 'CONFIRMED').length;
+            document.getElementById('pendingOrders').textContent = orders.filter(o => o.status === 'PENDING').length;
+        }
+
+        // Add some sample orders for demonstration
+        setTimeout(() => {
+            const sampleOrders = [
+                {
+                    orderId: '1',
+                    status: 'CONFIRMED',
+                    bookId: '123',
+                    quantity: 2,
+                    customer: 'Lily',
+                    timestamp: new Date(Date.now() - 3600000).toLocaleString()
+                },
+                {
+                    orderId: '2',
+                    status: 'CONFIRMED',
+                    bookId: '456',
+                    quantity: 1,
+                    customer: 'John',
+                    timestamp: new Date(Date.now() - 7200000).toLocaleString()
+                }
+            ];
+            
+            orders = sampleOrders;
+            updateRecentOrders();
+            updateStats();
+        }, 1000);
+    </script>
+</body>
+</html>

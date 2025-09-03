@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlobalBooks BPEL Process Monitor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .workflow-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .workflow-title i {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: #3498db;
+        }
+
+        .workflow-diagram {
+            position: relative;
+            min-height: 400px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .workflow-step {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: white;
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .workflow-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .workflow-step.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .workflow-step.completed {
+            background: #27ae60;
+            color: white;
+            border-color: #229954;
+        }
+
+        .workflow-step.error {
+            background: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+
+        .workflow-step.waiting {
+            background: #f39c12;
+            color: white;
+            border-color: #e67e22;
+        }
+
+        .workflow-arrow {
+            position: absolute;
+            height: 3px;
+            background: #3498db;
+            transform-origin: left center;
+        }
+
+        .workflow-arrow::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid #3498db;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+        }
+
+        .workflow-arrow.active {
+            background: #27ae60;
+        }
+
+        .workflow-arrow.active::after {
+            border-left-color: #27ae60;
+        }
+
+        .workflow-arrow.error {
+            background: #e74c3c;
+        }
+
+        .workflow-arrow.error::after {
+            border-left-color: #e74c3c;
+        }
+
+        .workflow-arrow.waiting {
+            background: #f39c12;
+        }
+
+        .workflow-arrow.waiting::after {
+            border-left-color: #f39c12;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .process-controls {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .controls-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        .controls-title i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: #3498db;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-btn.danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .control-btn.danger:hover {
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .control-btn.success {
+            background: linear-gradient(45deg, #27ae60, #229954);
+        }
+
+        .control-btn.success:hover {
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .logs-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .logs-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        .logs-title i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            color: #3498db;
+        }
+
+        .log-container {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            color: #ecf0f1;
+        }
+
+        .log-entry.info {
+            background: rgba(52, 152, 219, 0.2);
+            border-left: 3px solid #3498db;
+        }
+
+        .log-entry.success {
+            background: rgba(39, 174, 96, 0.2);
+            border-left: 3px solid #27ae60;
+        }
+
+        .log-entry.warning {
+            background: rgba(241, 196, 15, 0.2);
+            border-left: 3px solid #f39c12;
+        }
+
+        .log-entry.error {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 3px solid #e74c3c;
+        }
+
+        .log-timestamp {
+            color: #95a5a6;
+            font-size: 0.8rem;
+        }
+
+        .log-message {
+            margin-left: 1rem;
+        }
+
+        .process-info {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-project-diagram"></i> BPEL Process Monitor</h1>
+            <p>Real-time Workflow Orchestration & Monitoring</p>
+        </div>
+
+        <div class="process-controls">
+            <div class="controls-title">
+                <i class="fas fa-play-circle"></i>
+                <h3>Process Controls</h3>
+            </div>
+            <div class="control-buttons">
+                <button class="control-btn success" onclick="startProcess()">
+                    <i class="fas fa-play"></i> Start Process
+                </button>
+                <button class="control-btn" onclick="pauseProcess()">
+                    <i class="fas fa-pause"></i> Pause Process
+                </button>
+                <button class="control-btn danger" onclick="stopProcess()">
+                    <i class="fas fa-stop"></i> Stop Process
+                </button>
+                <button class="control-btn" onclick="resetProcess()">
+                    <i class="fas fa-redo"></i> Reset Process
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="workflow-section">
+                <div class="workflow-title">
+                    <i class="fas fa-sitemap"></i>
+                    <h3>Order Processing Workflow</h3>
+                </div>
+                <div class="workflow-diagram">
+                    <!-- Workflow steps will be positioned here -->
+                    <div class="workflow-step" id="step1" style="top: 50px; left: 50px;">
+                        Receive Order
+                    </div>
+                    <div class="workflow-step" id="step2" style="top: 50px; left: 250px;">
+                        Validate Order
+                    </div>
+                    <div class="workflow-step" id="step3" style="top: 50px; left: 450px;">
+                        Check Inventory
+                    </div>
+                    <div class="workflow-step" id="step4" style="top: 200px; left: 50px;">
+                        Process Payment
+                    </div>
+                    <div class="workflow-step" id="step5" style="top: 200px; left: 250px;">
+                        Update Inventory
+                    </div>
+                    <div class="workflow-step" id="step6" style="top: 200px; left: 450px;">
+                        Send Confirmation
+                    </div>
+                    <div class="workflow-step" id="step7" style="top: 350px; left: 250px;">
+                        Complete Order
+                    </div>
+
+                    <!-- Workflow arrows -->
+                    <div class="workflow-arrow" id="arrow1" style="top: 85px; left: 170px; width: 80px; transform: rotate(0deg);"></div>
+                    <div class="workflow-arrow" id="arrow2" style="top: 85px; left: 370px; width: 80px; transform: rotate(0deg);"></div>
+                    <div class="workflow-arrow" id="arrow3" style="top: 85px; left: 570px; width: 80px; transform: rotate(90deg); transform-origin: left center;"></div>
+                    <div class="workflow-arrow" id="arrow4" style="top: 235px; left: 170px; width: 80px; transform: rotate(0deg);"></div>
+                    <div class="workflow-arrow" id="arrow5" style="top: 235px; left: 370px; width: 80px; transform: rotate(0deg);"></div>
+                    <div class="workflow-arrow" id="arrow6" style="top: 235px; left: 570px; width: 80px; transform: rotate(90deg); transform-origin: left center;"></div>
+                    <div class="workflow-arrow" id="arrow7" style="top: 285px; left: 310px; width: 80px; transform: rotate(90deg); transform-origin: left center;"></div>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <div class="workflow-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Process Statistics</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalProcesses">0</div>
+                    <div class="stat-label">Total Processes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeProcesses">0</div>
+                    <div class="stat-label">Active Processes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedProcesses">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="failedProcesses">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="process-info">
+            <div class="workflow-title">
+                <i class="fas fa-info-circle"></i>
+                <h3>Process Information</h3>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Process Name</div>
+                    <div class="info-value">placeOrder.bpel</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Current Status</div>
+                    <div class="info-value" id="currentStatus">Stopped</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Start Time</div>
+                    <div class="info-value" id="startTime">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Duration</div>
+                    <div class="info-value" id="duration">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Current Step</div>
+                    <div class="info-value" id="currentStep">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Success Rate</div>
+                    <div class="info-value" id="successRate">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="logs-section">
+            <div class="logs-title">
+                <i class="fas fa-terminal"></i>
+                <h3>Process Logs</h3>
+            </div>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry info">
+                    <span class="log-timestamp">[12:00:00]</span>
+                    <span class="log-message">BPEL Process Monitor initialized</span>
+                </div>
+                <div class="log-entry info">
+                    <span class="log-timestamp">[12:00:01]</span>
+                    <span class="log-message">Ready to start order processing workflow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let processStatus = 'stopped';
+        let currentStep = 0;
+        let processStartTime = null;
+        let processInterval = null;
+        let totalProcesses = 0;
+        let completedProcesses = 0;
+        let failedProcesses = 0;
+
+        const steps = [
+            { id: 'step1', name: 'Receive Order', arrow: 'arrow1' },
+            { id: 'step2', name: 'Validate Order', arrow: 'arrow2' },
+            { id: 'step3', name: 'Check Inventory', arrow: 'arrow3' },
+            { id: 'step4', name: 'Process Payment', arrow: 'arrow4' },
+            { id: 'step5', name: 'Update Inventory', arrow: 'arrow5' },
+            { id: 'step6', name: 'Send Confirmation', arrow: 'arrow6' },
+            { id: 'step7', name: 'Complete Order', arrow: 'arrow7' }
+        ];
+
+        function addLog(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="log-message">${message}</span>
+            `;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStep(stepIndex, status) {
+            if (stepIndex >= 0 && stepIndex < steps.length) {
+                const step = document.getElementById(steps[stepIndex].id);
+                const arrow = document.getElementById(steps[stepIndex].arrow);
+                
+                // Reset all steps
+                steps.forEach((s, i) => {
+                    document.getElementById(s.id).className = 'workflow-step';
+                    if (document.getElementById(s.arrow)) {
+                        document.getElementById(s.arrow).className = 'workflow-arrow';
+                    }
+                });
+
+                // Update current and completed steps
+                for (let i = 0; i <= stepIndex; i++) {
+                    const currentStep = document.getElementById(steps[i].id);
+                    const currentArrow = document.getElementById(steps[i].arrow);
+                    
+                    if (i < stepIndex) {
+                        currentStep.className = 'workflow-step completed';
+                        if (currentArrow) currentArrow.className = 'workflow-arrow active';
+                    } else if (i === stepIndex) {
+                        currentStep.className = `workflow-step ${status}`;
+                        if (currentArrow) currentArrow.className = `workflow-arrow ${status}`;
+                    }
+                }
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('totalProcesses').textContent = totalProcesses;
+            document.getElementById('activeProcesses').textContent = processStatus === 'running' ? 1 : 0;
+            document.getElementById('completedProcesses').textContent = completedProcesses;
+            document.getElementById('failedProcesses').textContent = failedProcesses;
+            
+            const successRate = totalProcesses > 0 ? Math.round((completedProcesses / totalProcesses) * 100) : 0;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+        }
+
+        function updateProcessInfo() {
+            document.getElementById('currentStatus').textContent = processStatus.charAt(0).toUpperCase() + processStatus.slice(1);
+            document.getElementById('currentStep').textContent = currentStep < steps.length ? steps[currentStep].name : 'Completed';
+            
+            if (processStartTime) {
+                document.getElementById('startTime').textContent = processStartTime.toLocaleTimeString();
+                const duration = Math.floor((Date.now() - processStartTime.getTime()) / 1000);
+                document.getElementById('duration').textContent = `${duration}s`;
+            }
+        }
+
+        function startProcess() {
+            if (processStatus === 'running') return;
+            
+            processStatus = 'running';
+            currentStep = 0;
+            processStartTime = new Date();
+            totalProcesses++;
+            
+            addLog('Starting order processing workflow...', 'success');
+            updateStep(currentStep, 'active');
+            updateStats();
+            updateProcessInfo();
+            
+            processInterval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    updateStep(currentStep, 'waiting');
+                    currentStep++;
+                    
+                    if (currentStep < steps.length) {
+                        updateStep(currentStep, 'active');
+                        addLog(`Executing: ${steps[currentStep].name}`, 'info');
+                    } else {
+                        // Process completed
+                        updateStep(steps.length - 1, 'completed');
+                        processStatus = 'completed';
+                        completedProcesses++;
+                        addLog('Order processing workflow completed successfully!', 'success');
+                        clearInterval(processInterval);
+                        updateStats();
+                        updateProcessInfo();
+                    }
+                }
+            }, 2000);
+        }
+
+        function pauseProcess() {
+            if (processStatus !== 'running') return;
+            
+            processStatus = 'paused';
+            addLog('Process paused', 'warning');
+            clearInterval(processInterval);
+            updateProcessInfo();
+        }
+
+        function stopProcess() {
+            if (processStatus === 'stopped') return;
+            
+            processStatus = 'stopped';
+            currentStep = 0;
+            processStartTime = null;
+            failedProcesses++;
+            
+            addLog('Process stopped', 'error');
+            clearInterval(processInterval);
+            
+            // Reset workflow visualization
+            steps.forEach((s, i) => {
+                document.getElementById(s.id).className = 'workflow-step';
+                if (document.getElementById(s.arrow)) {
+                    document.getElementById(s.arrow).className = 'workflow-arrow';
+                }
+            });
+            
+            updateStats();
+            updateProcessInfo();
+        }
+
+        function resetProcess() {
+            stopProcess();
+            currentStep = 0;
+            processStartTime = null;
+            addLog('Process reset', 'info');
+            updateProcessInfo();
+        }
+
+        // Initialize
+        updateStats();
+        updateProcessInfo();
+        addLog('BPEL Process Monitor ready', 'info');
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="GlobalBooks_SOAP_UI_Project" name="GlobalBooks SOA Testing" resourceRoot="" soapui-version="5.7.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings/>
+  <con:interface xsi:type="con:WsdlInterface" id="BookCatalogService" name="BookCatalogService" type="wsdl" definition="http://localhost:8081/services?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart="http://localhost:8081/services?wsdl">
+      <con:part>
+        <con:url>http://localhost:8081/services?wsdl</con:url>
+        <con:content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="BookCatalogService" targetNamespace="http://ws.bookcatalog.example.com/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ws.bookcatalog.example.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <types>
+    <xsd:schema targetNamespace="http://ws.bookcatalog.example.com/">
+      <xsd:complexType name="Book">
+        <xsd:sequence>
+          <xsd:element name="id" type="xsd:string"/>
+          <xsd:element name="title" type="xsd:string"/>
+          <xsd:element name="author" type="xsd:string"/>
+          <xsd:element name="price" type="xsd:double"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="getBook" type="xsd:string"/>
+      <xsd:element name="getBookResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="tns:Book"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="listBooks" type="xsd:string"/>
+      <xsd:element name="listBooksResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="return" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="addBook" type="tns:Book"/>
+      <xsd:element name="addBookResponse" type="tns:Book"/>
+    </xsd:schema>
+  </types>
+  <message name="getBook">
+    <part name="parameters" element="tns:getBook"/>
+  </message>
+  <message name="getBookResponse">
+    <part name="parameters" element="tns:getBookResponse"/>
+  </message>
+  <message name="listBooks">
+    <part name="parameters" element="tns:listBooks"/>
+  </message>
+  <message name="listBooksResponse">
+    <part name="parameters" element="tns:listBooksResponse"/>
+  </message>
+  <message name="addBook">
+    <part name="parameters" element="tns:addBook"/>
+  </message>
+  <message name="addBookResponse">
+    <part name="parameters" element="tns:addBookResponse"/>
+  </message>
+  <portType name="BookCatalogPortType">
+    <operation name="getBook">
+      <input message="tns:getBook"/>
+      <output message="tns:getBookResponse"/>
+    </operation>
+    <operation name="listBooks">
+      <input message="tns:listBooks"/>
+      <output message="tns:listBooksResponse"/>
+    </operation>
+    <operation name="addBook">
+      <input message="tns:addBook"/>
+      <output message="tns:addBookResponse"/>
+    </operation>
+  </portType>
+  <binding name="BookCatalogPortBinding" type="tns:BookCatalogPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="getBook">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="listBooks">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+    <operation name="addBook">
+      <soap:operation soapAction=""/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+  </binding>
+  <service name="BookCatalogService">
+    <port name="BookCatalogPort" binding="tns:BookCatalogPortBinding">
+      <soap:address location="http://localhost:8081/services"/>
+    </port>
+  </service>
+</definitions>]]></con:content>
+        <con:type>http://schemas.xmlsoap.org/wsdl/</con:type>
+      </con:part>
+    </con:definitionCache>
+    <con:endpoints>
+      <con:endpoint>http://localhost:8081/services</con:endpoint>
+    </con:endpoints>
+    <con:operation id="getBook" name="getBook" bindingOperationName="getBook" type="Request-Response" outputName="getBookResponse" inputName="getBook" nameSpace="http://ws.bookcatalog.example.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings/>
+      <con:call id="getBook_Request" name="getBook Request">
+        <con:settings/>
+        <con:interface>BookCatalogService</con:interface>
+        <con:operation>getBook</con:operation>
+        <con:request name="getBook Request" id="getBook_Request" mediaType="text/xml">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8081/services</con:endpoint>
+          <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:getBook>123</ws:getBook>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+          <con:assertion type="SOAP Response" id="SOAP Response"/>
+          <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+          <con:assertion type="Response SLA" id="Response SLA">
+            <con:configuration>
+              <timeout>5000</timeout>
+            </con:configuration>
+          </con:assertion>
+        </con:request>
+      </con:call>
+    </con:operation>
+    <con:operation id="listBooks" name="listBooks" bindingOperationName="listBooks" type="Request-Response" outputName="listBooksResponse" inputName="listBooks" nameSpace="http://ws.bookcatalog.example.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings/>
+      <con:call id="listBooks_Request" name="listBooks Request">
+        <con:settings/>
+        <con:interface>BookCatalogService</con:interface>
+        <con:operation>listBooks</con:operation>
+        <con:request name="listBooks Request" id="listBooks_Request" mediaType="text/xml">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8081/services</con:endpoint>
+          <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:listBooks>all</ws:listBooks>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+          <con:assertion type="SOAP Response" id="SOAP Response"/>
+          <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+          <con:assertion type="Response SLA" id="Response SLA">
+            <con:configuration>
+              <timeout>5000</timeout>
+            </con:configuration>
+          </con:assertion>
+        </con:request>
+      </con:call>
+    </con:operation>
+    <con:operation id="addBook" name="addBook" bindingOperationName="addBook" type="Request-Response" outputName="addBookResponse" inputName="addBook" nameSpace="http://ws.bookcatalog.example.com/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <con:settings/>
+      <con:call id="addBook_Request" name="addBook Request">
+        <con:settings/>
+        <con:interface>BookCatalogService</con:interface>
+        <con:operation>addBook</con:operation>
+        <con:request name="addBook Request" id="addBook_Request" mediaType="text/xml">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8081/services</con:endpoint>
+          <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:addBook>
+         <id>456</id>
+         <title>The Great Gatsby</title>
+         <author>F. Scott Fitzgerald</author>
+         <price>12.99</price>
+      </ws:addBook>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+          <con:assertion type="SOAP Response" id="SOAP Response"/>
+          <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+          <con:assertion type="Response SLA" id="Response SLA">
+            <con:configuration>
+              <timeout>5000</timeout>
+            </con:configuration>
+          </con:assertion>
+        </con:request>
+      </con:call>
+    </con:operation>
+  </con:interface>
+  <con:testSuite id="GlobalBooks_TestSuite" name="GlobalBooks Test Suite">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase id="Catalog_Service_Tests" name="Catalog Service Tests">
+      <con:settings/>
+      <con:testStep type="request" name="Test getBook Operation" id="Test_getBook_Operation">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>BookCatalogService</con:interface>
+          <con:operation>getBook</con:operation>
+          <con:request name="Test getBook Operation" id="Test_getBook_Operation" mediaType="text/xml">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>http://localhost:8081/services</con:endpoint>
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:getBook>123</ws:getBook>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+            <con:assertion type="SOAP Response" id="SOAP Response"/>
+            <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+            <con:assertion type="Response SLA" id="Response SLA">
+              <con:configuration>
+                <timeout>5000</timeout>
+              </con:configuration>
+            </con:assertion>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="request" name="Test listBooks Operation" id="Test_listBooks_Operation">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>BookCatalogService</con:interface>
+          <con:operation>listBooks</con:operation>
+          <con:request name="Test listBooks Operation" id="Test_listBooks_Operation" mediaType="text/xml">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>http://localhost:8081/services</con:endpoint>
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:listBooks>all</ws:listBooks>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+            <con:assertion type="SOAP Response" id="SOAP Response"/>
+            <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+            <con:assertion type="Response SLA" id="Response SLA">
+              <con:configuration>
+                <timeout>5000</timeout>
+              </con:configuration>
+            </con:assertion>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="request" name="Test addBook Operation" id="Test_addBook_Operation">
+        <con:settings/>
+        <con:config xsi:type="con:RequestStepConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:interface>BookCatalogService</con:interface>
+          <con:operation>addBook</con:operation>
+          <con:request name="Test addBook Operation" id="Test_addBook_Operation" mediaType="text/xml">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>http://localhost:8081/services</con:endpoint>
+            <con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.bookcatalog.example.com/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ws:addBook>
+         <id>456</id>
+         <title>The Great Gatsby</title>
+         <author>F. Scott Fitzgerald</author>
+         <price>12.99</price>
+      </ws:addBook>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request>
+            <con:assertion type="SOAP Response" id="SOAP Response"/>
+            <con:assertion type="Schema Compliance" id="Schema Compliance"/>
+            <con:assertion type="Response SLA" id="Response SLA">
+              <con:configuration>
+                <timeout>5000</timeout>
+              </con:configuration>
+            </con:assertion>
+          </con:request>
+        </con:config>
+      </con:testStep>
+      <con:properties/>
+    </con:testCase>
+    <con:properties/>
+  </con:testSuite>
+  <con:properties/>
+  <con:wssContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:oAuth1ProfileContainer/>
+</con:soapui-project>

@@ -1,0 +1,78 @@
+{
+  "info": {
+    "name": "GlobalBooks Orders Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "e4d2f1c0-1111-2222-3333-444455556666"
+  },
+  "item": [
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["orders"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bookId\": \"123\",\n  \"quantity\": 2,\n  \"customer\": \"Lily\"\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response has orderId and CONFIRMED', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json).to.have.property('orderId');",
+              "  pm.expect(json.status).to.eql('CONFIRMED');",
+              "});",
+              "pm.collectionVariables.set('createdOrderId', pm.response.json().orderId);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Order",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/orders/{{createdOrderId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["orders", "{{createdOrderId}}"]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Response has same orderId and status present', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json).to.have.property('orderId');",
+              "  pm.expect(json.status).to.be.oneOf(['CONFIRMED', 'NOT FOUND']);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}

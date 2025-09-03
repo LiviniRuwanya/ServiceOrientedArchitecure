@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpel:process name="PlaceOrderProcess"
+              targetNamespace="http://globalbooks.com/bpel/placeorder"
+              xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+              xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+              xmlns:tns="http://globalbooks.com/catalog"
+              suppressJoinFailure="yes">
+
+  <bpel:import importType="http://schemas.xmlsoap.org/wsdl/" location="../src/main/resources/CatalogService.wsdl" namespace="http://globalbooks.com/catalog"/>
+
+  <bpel:partnerLinks>
+    <bpel:partnerLink name="client" partnerLinkType="plnk:ClientLT" myRole="service"/>
+    <bpel:partnerLink name="catalog" partnerLinkType="plnk:CatalogLT" partnerRole="catalogRole"/>
+  </bpel:partnerLinks>
+
+  <bpel:variables>
+    <bpel:variable name="input" messageType="tns:PlaceOrderRequest"/>
+    <bpel:variable name="output" messageType="tns:PlaceOrderResponse"/>
+    <bpel:variable name="catalogReq" messageType="tns:GetBookByISBNRequest"/>
+    <bpel:variable name="catalogRes" messageType="tns:GetBookByISBNResponse"/>
+  </bpel:variables>
+
+  <bpel:sequence>
+    <bpel:receive partnerLink="client" operation="placeOrder" portType="tns:PlaceOrderPT" variable="input" createInstance="yes"/>
+
+    <bpel:assign>
+      <bpel:copy>
+        <bpel:from>$input.body/isbn</bpel:from>
+        <bpel:to>$catalogReq.part/isbn</bpel:to>
+      </bpel:copy>
+    </bpel:assign>
+
+    <bpel:invoke partnerLink="catalog" operation="getBookByISBN" portType="tns:CatalogPortType" inputVariable="catalogReq" outputVariable="catalogRes"/>
+
+    <bpel:assign>
+      <bpel:copy>
+        <bpel:from>concat('CONFIRMED for ', $input.body/isbn)</bpel:from>
+        <bpel:to>$output.body/status</bpel:to>
+      </bpel:copy>
+    </bpel:assign>
+
+    <bpel:reply partnerLink="client" operation="placeOrder" portType="tns:PlaceOrderPT" variable="output"/>
+  </bpel:sequence>
+</bpel:process>

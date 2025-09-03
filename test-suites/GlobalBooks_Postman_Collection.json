@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "GlobalBooks SOA Testing",
+    "description": "Complete Postman collection for testing GlobalBooks microservices architecture",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "UDDI Service Registry",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8085/uddi/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8085",
+              "path": ["uddi", "health"]
+            }
+          }
+        },
+        {
+          "name": "Register Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceName\": \"catalog-service\",\n  \"serviceType\": \"SOAP\",\n  \"endpointUrl\": \"http://localhost:8081/services\",\n  \"wsdlUrl\": \"http://localhost:8081/services?wsdl\",\n  \"port\": 8081,\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8085/uddi/register",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8085",
+              "path": ["uddi", "register"]
+            }
+          }
+        },
+        {
+          "name": "List All Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8085/uddi/services",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8085",
+              "path": ["uddi", "services"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catalog Service (SOAP)",
+      "item": [
+        {
+          "name": "Get WSDL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8081/services?wsdl",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["services"],
+              "query": [
+                {
+                  "key": "wsdl",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Books",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ws=\"http://ws.bookcatalog.example.com/\">\n   <soapenv:Header/>\n   <soapenv:Body>\n      <ws:listBooks>all</ws:listBooks>\n   </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "http://localhost:8081/services",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8081",
+              "path": ["services"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders Service (REST)",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookId\": \"123\",\n  \"quantity\": 2,\n  \"customer\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8082/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["orders"]
+            }
+          }
+        },
+        {
+          "name": "Get Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8082/orders/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8082",
+              "path": ["orders", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments Service (REST)",
+      "item": [
+        {
+          "name": "List Payments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8083/payments",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8083",
+              "path": ["payments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shipping Service (REST)",
+      "item": [
+        {
+          "name": "List Shipments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8084/shipping",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8084",
+              "path": ["shipping"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
